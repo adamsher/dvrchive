@@ -1,0 +1,9 @@
+﻿{
+  "description": "Place a copy of this file in the directory of each show you'd like to archive. Options can be different for each show.",
+  "archive-options": "Should this show be archived: true/false",
+  "archive": "true",
+  "resolution-options": "Resolution for archived video: 1080p, 720p, 480p",
+  "resolution": "720p",
+  "deinterlace-options": "Should this show be deinterlaced: true/false",
+  "deinterlace": "true"
+}
