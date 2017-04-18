@@ -17,30 +17,21 @@ namespace dvrchive
     {
         static void Main(string[] args)
         {
-            if (args.Length == 2)
+            if (args.Length == 1)
             {
-                AppConfig.path = args[0];
-                DVR.path = args[1];
+                DVR.path = args[0];
+
+                AppConfig.Load();
 
                 if (
-                    !AppConfig.CheckExists() ||
-                    !DVR.CheckExists()
+                    !AppConfig.RunSanityChecks()
                     )
                 {
                     ShowUsage();
                 }
                 else
                 {
-                    AppConfig.Load();
-
-                    if (!AppConfig.CheckWineComskipExists())
-                    {
-                        Console.WriteLine("ERROR: using non-Windows OS and comskip.exe not specified correctly in config.json");
-                    }
-                    else
-                    {
-                        DVR.Archive();
-                    }                    
+                    DVR.Archive();
                 }
             }
             else
@@ -53,11 +44,10 @@ namespace dvrchive
         {
             Console.WriteLine("dvrchive help");
             Console.WriteLine("");
-            Console.WriteLine("dvrchive currently takes exactly 2 arguments: configuration file the path where your DVR files live");
-            Console.WriteLine("dvarchive will scan for shows that are less than 24 hours old and archive them to the path specified.");
+            Console.WriteLine("dvrchive currently takes exactly 1 argument: the path where your DVR files live");
             Console.WriteLine("");
             Console.WriteLine("Example Usage Linux/macOS/POSIX:");
-            Console.WriteLine("dotnet dvrchive.dll /opt/dvrchive/config.json /mnt/dvr/");
+            Console.WriteLine("dotnet dvrchive.dll /mnt/dvr/");
             Console.WriteLine("");
             Console.WriteLine("Example Usage Windows:");
             Console.WriteLine("dotnet dvrchive.dll \"c:\\program files\\dvrchive\\config.json\" d:\\drv\\");

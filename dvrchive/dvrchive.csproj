@@ -9,4 +9,12 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="1.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties config_1json__JSONSchema="http://json.schemastore.org/grunt-clean-task" /></VisualStudio></ProjectExtensions>
+
 </Project>

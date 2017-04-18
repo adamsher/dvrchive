@@ -34,6 +34,9 @@ namespace dvrchive
 
         public static void Load()
         {
+            CheckOS();
+            path = AppContext.BaseDirectory + GetSlash() + "config.json";
+
             config = new ConfigurationBuilder()
                 .AddJsonFile(path)
                 .Build();
@@ -112,12 +115,10 @@ namespace dvrchive
                     Console.WriteLine("config.json does not specify temp path, defaulting to current system default: {0}", tempPath);
                 }
             }
-
-            CheckOS();
         }
 
         public static bool CheckExists()
-        {
+        {            
             return File.Exists(path);
         }
 
@@ -159,6 +160,35 @@ namespace dvrchive
             {
                 return '/';
             }
+        }
+
+        public static bool RunSanityChecks()
+        {
+            if (!CheckExists())
+            {
+                Console.WriteLine("dvrchive: ERROR: config.json not found at: {0}", path);
+                return false;
+            }
+
+            if (!DVR.CheckExists())
+            {
+                Console.WriteLine("dvrchive: ERROR: DVR location does not exist: {0}", DVR.path);
+                return false;
+            }
+
+            if (!Directory.Exists(archivePath))
+            {
+                Console.WriteLine("dvrchive: ERROR: archive location does not exist: {0}", archivePath);
+                return false;
+            }
+
+            if (!CheckWineComskipExists())
+            {
+                Console.WriteLine("dvrchive: ERROR: using non-Windows OS and comskip.exe not specified correctly in config.json");
+                return false;
+            }
+
+            return true;
         }
     }
 }

@@ -7,3 +7,4 @@ C:\Users\adam\Documents\Projects\dvrchive\dvrchive\obj\Debug\netcoreapp1.1\dvrch
 C:\Users\adam\Documents\Projects\dvrchive\dvrchive\obj\Debug\netcoreapp1.1\dvrchive.AssemblyInfo.cs
 C:\Users\adam\Documents\Projects\dvrchive\dvrchive\obj\Debug\netcoreapp1.1\dvrchive.dll
 C:\Users\adam\Documents\Projects\dvrchive\dvrchive\obj\Debug\netcoreapp1.1\dvrchive.pdb
+C:\Users\adam\Documents\Projects\dvrchive\dvrchive\bin\Debug\netcoreapp1.1\config.json

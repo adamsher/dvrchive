@@ -1,0 +1,14 @@
+﻿{
+  "debug-options": "true/false",
+  "debug": "true",
+  "maxHours-options": "Maximum hours old a recording should be. 0=archive no matter how old",
+  "maxHours": "0",
+  "recordingExtension-options": "extension of dvr recordings ie: ts, mkv, etc.",
+  "recordingExtension": "ts",
+  "archivePath-options": "Path to your archive location. ie: d:\\plex\\tv\\ or /mnt/plex/tv",
+  "archivePath": "d:\\plex\\",
+  "pathToComskipNonWindows-options": "Directory containing comskip.exe for non-Windows OS",
+  "pathToComskipNonWindows": "",
+  "tempPath-options": "Temporary directory when archiving. Leave blank to use system temp directory",
+  "tempPath": ""
+}
