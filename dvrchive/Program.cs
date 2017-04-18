@@ -50,7 +50,7 @@ namespace dvrchive
             Console.WriteLine("dotnet dvrchive.dll /mnt/dvr/");
             Console.WriteLine("");
             Console.WriteLine("Example Usage Windows:");
-            Console.WriteLine("dotnet dvrchive.dll \"c:\\program files\\dvrchive\\config.json\" d:\\drv\\");
+            Console.WriteLine("dotnet dvrchive.dll d:\\dvr\\");
             Console.WriteLine("");
             Console.WriteLine("dvrchive expects that each show is stored in its own folder (dvrchive doesn't support season folders on the DVR, but does in the archive location).");
             Console.WriteLine("Each folder that contains a dvrchive.json file is considered a show and the options for that show will be read from the file.");
