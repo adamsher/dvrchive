@@ -92,15 +92,9 @@ namespace dvrchive
             {
                 Console.WriteLine("dvrchive: Unable to archive {0}: EDL coudld be read correctly", path);
             }
-
-            try
-            {
-                RemoveTempLocation();
-            }
-            catch
-            {
-                Console.WriteLine("dvrchive: unable to remove temp path {0}", GetTempLocation());
-            }
+            
+            RemoveTempLocation();
+            RemoveEDLFiles();
 
         }
 
@@ -413,17 +407,64 @@ namespace dvrchive
         
         private void RemoveTempLocation()
         {
-            Directory.Delete(GetTempLocation(), true);
-
-            if (AppConfig.debug)
+            try
             {
-                Console.WriteLine("dvrchive: Deleting temp location at: {0}", GetTempLocation());
+                Directory.Delete(GetTempLocation(), true);
+
+                if (AppConfig.debug)
+                {
+                    Console.WriteLine("dvrchive: Deleting temp location at: {0}", GetTempLocation());
+                }
             }
+            catch (IOException e)
+            {
+                Console.WriteLine("dvrchive: Unable to remove temp path {0}", GetTempLocation());
+                Console.WriteLine("dvrchive: With exception: {0}", e);
+            }
+            
         }
 
         public string GetTempLocation()
         {
             return AppConfig.tempPath + AppConfig.GetSlash() + guid + AppConfig.GetSlash();
         }   
+
+        public void RemoveEDLFiles()
+        {
+            string episodeName = GetEpisodeNameAndNumber();
+
+            List<string> filesToDelete = new List<string>();
+
+            filesToDelete.Add(episodeName + ".edl");
+            filesToDelete.Add(episodeName + ".log");
+            filesToDelete.Add(episodeName + ".logo.txt");
+            filesToDelete.Add(episodeName + ".txt");
+
+            if (AppConfig.debug)
+            {
+                Console.WriteLine("dvrchive: Cleaning up archive files:");
+                foreach (string s in filesToDelete)
+                {
+                    Console.WriteLine("dvrchive: {0}", show.path + AppConfig.GetSlash() + s);
+                }
+            }
+
+            foreach (string s in filesToDelete)
+            {
+                if (File.Exists(show.path + AppConfig.GetSlash() + s))
+                {
+                    try
+                    {
+                        File.Delete(show.path + AppConfig.GetSlash() + s);
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine("dvrchive: ERROR: Unable to delete {0}", show.path + AppConfig.GetSlash() + s);
+                        Console.WriteLine("dvrchive: ERROR: With exception {0}", e);
+                    }
+                }
+            }
+                        
+        }
     }
 }
