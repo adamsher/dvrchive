@@ -38,6 +38,7 @@ namespace dvrchive
         public string archivePath = "";
         public Guid guid = Guid.NewGuid();
 
+
         public void ProcessEpisode()
         {
             if (AppConfig.maxHours == 0)
@@ -66,8 +67,7 @@ namespace dvrchive
 
             DeduceSeasonNumber();
 
-            CreateTempLocation();
-            
+            CreateTempLocation();            
 
             CreateArchivePath();
 
@@ -292,15 +292,8 @@ namespace dvrchive
             //script.Add(lastCommand);
 
             //Add mkvmerge to script
-            if (AppConfig.isWindows)
-            {
-                script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
-            }
-            else
-            {
-                script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
-            }            
-      
+            script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
+
             if (AppConfig.debug)
             {
                 Console.WriteLine("dvrchive: Archive Script:");
@@ -320,8 +313,23 @@ namespace dvrchive
                     Console.WriteLine("dvrchive: running: " + psi.FileName + " " + psi.Arguments);
                 }
 
-                Process p = Process.Start(psi);
-                p.WaitForExit();
+                try
+                {
+                    Process p = Process.Start(psi);
+                    //p.WaitForExit();
+                    string s = p.StandardOutput.ReadToEnd();
+                    if (AppConfig.debug)
+                    {
+                        Console.WriteLine("dvrchive: command output: {0}", s);
+                    }                    
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("dvrchive: ERROR: Unable to run {0}", psi.FileName + " " + psi.Arguments);
+                    Console.WriteLine("dvrchive: ERROR: With Exception {0}", e);
+                }
+
+                
             }
         }
 
