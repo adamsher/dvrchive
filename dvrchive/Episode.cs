@@ -267,9 +267,7 @@ namespace dvrchive
 
             int segmentCount = 1;
             foreach (double[] span in encodeTimes)
-            {
-                //string command = "ffmpeg -ss " + span[0].ToString() + " -i " + path + " -to " + span[1] + " -vcodec libx264 -preset fast -crf 23 -vf yadif=1,scale=1280:-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero " + fileCount + ".mkv";
-                
+            {               
                 Segment segment = new Segment();
                 segment.start = span[0];
                 segment.end = span[1];
@@ -277,7 +275,6 @@ namespace dvrchive
 
 
                 segmentCount++;
-                //Console.WriteLine("Record from {0} to {1}", span[0], span[1]);
             }
 
 
@@ -286,10 +283,6 @@ namespace dvrchive
             Segment lastSegment = new Segment();
             lastSegment.start = ends[ends.Count - 1];
             script.Add(CommandBuilder.GenerateLastCommand(show, this, lastSegment, segmentCount));
-
-
-            //string lastCommand = "ffmpeg -ss " + ends[ends.Count - 1].ToString() + " -i " + path + " -vcodec libx264 -preset fast -crf 23 -vf yadif=1,scale=1280:-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero " + segmentCount + ".mkv";
-            //script.Add(lastCommand);
 
             //Add mkvmerge to script
             script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
