@@ -131,9 +131,18 @@ namespace dvrchive
             //Remove slashes
             string[] nameArray = path.Split(AppConfig.GetSlash());
             string slashlessName = nameArray.Last();
+            nameArray = slashlessName.Split('.');
 
-            //Assuming format: Name of Show.S02E125.ts
-            showName = slashlessName.Split('.').First();
+            int count = 0;
+
+            //Assuming format: Name of Show With.Title.With.Annoying.Periods..S02E125.ts
+            for (int i = 0; i < nameArray.Length - 1; i++)
+            {
+                showName += nameArray[i] + ".";
+                count++;
+            }
+
+            showName += nameArray[count];
 
             if (AppConfig.debug)
             {

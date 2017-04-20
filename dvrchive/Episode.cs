@@ -361,8 +361,9 @@ namespace dvrchive
             string[] nameArray = path.Split(AppConfig.GetSlash());
             string slashlessName = nameArray.Last();
 
-            //Assuming format: Name of Show.S02E125.ts
-            string seasonEpisode = slashlessName.Split('.')[1];
+            //Assuming format: Name of Show With.Title.With.Annoying.Periods.S02E125.ts
+            string[] slashlessArray = slashlessName.Split('.');
+            string seasonEpisode = slashlessArray[slashlessArray.Length - 2];
             //Split on the E
             string justSeason = seasonEpisode.Split('E')[0];
             //Remove the preceeding S
