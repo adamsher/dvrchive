@@ -27,7 +27,7 @@ namespace dvrchive
 
         public string path;
         private string resolution; //Valid options: 1080p, 720p, 480p
-        public double width = 1280; //Archive encoding width
+        public double height = 720; //Archive encoding height
         private bool deinterlace = true; //Should the recordings be de-interlaced when archived
         private bool archive = false; //Should this show be archived
         private bool configLoaded = false;
@@ -92,15 +92,15 @@ namespace dvrchive
                 resolution = Config["resolution"];
                 if (resolution == "1080p")
                 {
-                    width = 1920;
+                    height = 1080;
                 }
                 else if (resolution == "480p")
                 {
-                    width = 852;
+                    height = 480;
                 }
                 else
                 {
-                    width = 1280;
+                    height = 720;
                 }
             }
             catch
