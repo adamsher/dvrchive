@@ -30,20 +30,20 @@ namespace dvrchive
         public static string pathToComskipNonWindows = ""; //For non-Windows systems, location of comskip.exe
         public static string tempPath = Path.GetTempPath(); //Can be overrident from config.json
 
-        public static IConfigurationRoot config { get; private set; }
+        public static IConfigurationRoot Config { get; private set; }
 
         public static void Load()
         {
             CheckOS();
             path = AppContext.BaseDirectory + GetSlash() + "config.json";
 
-            config = new ConfigurationBuilder()
+            Config = new ConfigurationBuilder()
                 .AddJsonFile(path)
                 .Build();
 
             try
             {
-                debug = bool.Parse(config["debug"]);
+                debug = bool.Parse(Config["debug"]);
             }
             catch
             {
@@ -52,7 +52,7 @@ namespace dvrchive
 
             try
             {
-                maxHours = double.Parse(config["maxHours"]);
+                maxHours = double.Parse(Config["maxHours"]);
             }
             catch
             {
@@ -64,7 +64,7 @@ namespace dvrchive
 
             try
             {
-                recordingExtension = config["recordingExtension"];
+                recordingExtension = Config["recordingExtension"];
             }
             catch
             {
@@ -76,7 +76,7 @@ namespace dvrchive
 
             try
             {
-                archivePath = config["archivePath"];
+                archivePath = Config["archivePath"];
             }
             catch
             {
@@ -89,7 +89,7 @@ namespace dvrchive
 
             try
             {
-                pathToComskipNonWindows = config["pathToComskipNonWindows"];
+                pathToComskipNonWindows = Config["pathToComskipNonWindows"];
             }
             catch
             {
@@ -102,7 +102,7 @@ namespace dvrchive
 
             try
             {
-                string configTemp = config["tempPath"];
+                string configTemp = Config["tempPath"];
                 if (configTemp != "")
                 {
                     tempPath = configTemp;

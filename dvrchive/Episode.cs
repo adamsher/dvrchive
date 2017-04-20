@@ -267,10 +267,12 @@ namespace dvrchive
 
             int segmentCount = 1;
             foreach (double[] span in encodeTimes)
-            {               
-                Segment segment = new Segment();
-                segment.start = span[0];
-                segment.end = span[1];
+            {
+                Segment segment = new Segment()
+                {
+                    start = span[0],
+                    end = span[1]
+                };
                 script.Add(CommandBuilder.GenerateEncodingCommand(show, this, segment, segmentCount));
 
 
@@ -280,8 +282,10 @@ namespace dvrchive
 
 
             //Create an entry in case there's OK data at the end: -ss (last end time) with NO -t so goes until end
-            Segment lastSegment = new Segment();
-            lastSegment.start = ends[ends.Count - 1];
+            Segment lastSegment = new Segment()
+            {
+                start = ends[ends.Count - 1]
+            };
             script.Add(CommandBuilder.GenerateLastCommand(show, this, lastSegment, segmentCount));
 
             //Add mkvmerge to script
@@ -435,13 +439,13 @@ namespace dvrchive
         {
             string episodeName = GetEpisodeNameAndNumber();
 
-            List<string> filesToDelete = new List<string>();
-
-            filesToDelete.Add(episodeName + ".edl");
-            filesToDelete.Add(episodeName + ".log");
-            filesToDelete.Add(episodeName + ".logo.txt");
-            filesToDelete.Add(episodeName + ".txt");
-
+            List<string> filesToDelete = new List<string>
+            {
+                episodeName + ".edl",
+                episodeName + ".log",
+                episodeName + ".logo.txt",
+                episodeName + ".txt"
+            };
             if (AppConfig.debug)
             {
                 Console.WriteLine("dvrchive: Cleaning up archive files:");

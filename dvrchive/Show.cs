@@ -33,7 +33,7 @@ namespace dvrchive
         private bool configLoaded = false;
         public string showName = "";
 
-        public static IConfigurationRoot config { get; private set; }
+        public static IConfigurationRoot Config { get; private set; }
 
         public void Process()
         {
@@ -62,7 +62,7 @@ namespace dvrchive
         {
             try
             {
-                config = new ConfigurationBuilder()
+                Config = new ConfigurationBuilder()
                 .SetBasePath(path)
                 .AddJsonFile("dvrchive.json")
                 .Build();
@@ -79,7 +79,7 @@ namespace dvrchive
 
             try
             {
-                archive = bool.Parse(config["archive"]);
+                archive = bool.Parse(Config["archive"]);
             }
             catch
             {
@@ -89,7 +89,7 @@ namespace dvrchive
 
             try
             {
-                resolution = config["resolution"];
+                resolution = Config["resolution"];
                 if (resolution == "1080p")
                 {
                     width = 1920;
@@ -113,7 +113,7 @@ namespace dvrchive
 
             try
             {
-                deinterlace = bool.Parse(config["deinterlace"]);
+                deinterlace = bool.Parse(Config["deinterlace"]);
             }
             catch
             {
