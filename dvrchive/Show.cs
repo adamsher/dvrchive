@@ -27,13 +27,13 @@ namespace dvrchive
 
         public string path;
         private string resolution; //Valid options: 1080p, 720p, 480p
-        public double width = 1280; //Archive encoding width
+        public double height = 720; //Archive encoding height
         private bool deinterlace = true; //Should the recordings be de-interlaced when archived
         private bool archive = false; //Should this show be archived
         private bool configLoaded = false;
         public string showName = "";
 
-        public static IConfigurationRoot config { get; private set; }
+        public static IConfigurationRoot Config { get; private set; }
 
         public void Process()
         {
@@ -62,7 +62,7 @@ namespace dvrchive
         {
             try
             {
-                config = new ConfigurationBuilder()
+                Config = new ConfigurationBuilder()
                 .SetBasePath(path)
                 .AddJsonFile("dvrchive.json")
                 .Build();
@@ -79,7 +79,7 @@ namespace dvrchive
 
             try
             {
-                archive = bool.Parse(config["archive"]);
+                archive = bool.Parse(Config["archive"]);
             }
             catch
             {
@@ -89,18 +89,18 @@ namespace dvrchive
 
             try
             {
-                resolution = config["resolution"];
+                resolution = Config["resolution"];
                 if (resolution == "1080p")
                 {
-                    width = 1920;
+                    height = 1080;
                 }
                 else if (resolution == "480p")
                 {
-                    width = 852;
+                    height = 480;
                 }
                 else
                 {
-                    width = 1280;
+                    height = 720;
                 }
             }
             catch
@@ -113,7 +113,7 @@ namespace dvrchive
 
             try
             {
-                deinterlace = bool.Parse(config["deinterlace"]);
+                deinterlace = bool.Parse(Config["deinterlace"]);
             }
             catch
             {
@@ -131,9 +131,18 @@ namespace dvrchive
             //Remove slashes
             string[] nameArray = path.Split(AppConfig.GetSlash());
             string slashlessName = nameArray.Last();
+            nameArray = slashlessName.Split('.');
 
-            //Assuming format: Name of Show.S02E125.ts
-            showName = slashlessName.Split('.').First();
+            int count = 0;
+
+            //Assuming format: Name of Show With.Title.With.Annoying.Periods..S02E125.ts
+            for (int i = 0; i < nameArray.Length - 1; i++)
+            {
+                showName += nameArray[i] + ".";
+                count++;
+            }
+
+            showName += nameArray[count];
 
             if (AppConfig.debug)
             {
