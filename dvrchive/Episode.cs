@@ -38,6 +38,7 @@ namespace dvrchive
         public string archivePath = "";
         public Guid guid = Guid.NewGuid();
 
+
         public void ProcessEpisode()
         {
             if (AppConfig.maxHours == 0)
@@ -66,8 +67,7 @@ namespace dvrchive
 
             DeduceSeasonNumber();
 
-            CreateTempLocation();
-            
+            CreateTempLocation();            
 
             CreateArchivePath();
 
@@ -92,15 +92,9 @@ namespace dvrchive
             {
                 Console.WriteLine("dvrchive: Unable to archive {0}: EDL coudld be read correctly", path);
             }
-
-            try
-            {
-                RemoveTempLocation();
-            }
-            catch
-            {
-                Console.WriteLine("dvrchive: unable to remove temp path {0}", GetTempLocation());
-            }
+            
+            RemoveTempLocation();
+            RemoveEDLFiles();
 
         }
 
@@ -274,39 +268,29 @@ namespace dvrchive
             int segmentCount = 1;
             foreach (double[] span in encodeTimes)
             {
-                //string command = "ffmpeg -ss " + span[0].ToString() + " -i " + path + " -to " + span[1] + " -vcodec libx264 -preset fast -crf 23 -vf yadif=1,scale=1280:-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero " + fileCount + ".mkv";
-                
-                Segment segment = new Segment();
-                segment.start = span[0];
-                segment.end = span[1];
+                Segment segment = new Segment()
+                {
+                    start = span[0],
+                    end = span[1]
+                };
                 script.Add(CommandBuilder.GenerateEncodingCommand(show, this, segment, segmentCount));
 
 
                 segmentCount++;
-                //Console.WriteLine("Record from {0} to {1}", span[0], span[1]);
             }
 
 
 
             //Create an entry in case there's OK data at the end: -ss (last end time) with NO -t so goes until end
-            Segment lastSegment = new Segment();
-            lastSegment.start = ends[ends.Count - 1];
+            Segment lastSegment = new Segment()
+            {
+                start = ends[ends.Count - 1]
+            };
             script.Add(CommandBuilder.GenerateLastCommand(show, this, lastSegment, segmentCount));
 
-
-            //string lastCommand = "ffmpeg -ss " + ends[ends.Count - 1].ToString() + " -i " + path + " -vcodec libx264 -preset fast -crf 23 -vf yadif=1,scale=1280:-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero " + segmentCount + ".mkv";
-            //script.Add(lastCommand);
-
             //Add mkvmerge to script
-            if (AppConfig.isWindows)
-            {
-                script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
-            }
-            else
-            {
-                script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
-            }            
-      
+            script.Add(CommandBuilder.GenerateMkvmergeCommand(show, this, segmentCount));
+
             if (AppConfig.debug)
             {
                 Console.WriteLine("dvrchive: Archive Script:");
@@ -326,8 +310,23 @@ namespace dvrchive
                     Console.WriteLine("dvrchive: running: " + psi.FileName + " " + psi.Arguments);
                 }
 
-                Process p = Process.Start(psi);
-                p.WaitForExit();
+                try
+                {
+                    Process p = Process.Start(psi);
+                    //p.WaitForExit();
+                    string s = p.StandardOutput.ReadToEnd();
+                    if (AppConfig.debug)
+                    {
+                        Console.WriteLine("dvrchive: command output: {0}", s);
+                    }                    
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("dvrchive: ERROR: Unable to run {0}", psi.FileName + " " + psi.Arguments);
+                    Console.WriteLine("dvrchive: ERROR: With Exception {0}", e);
+                }
+
+                
             }
         }
 
@@ -366,8 +365,9 @@ namespace dvrchive
             string[] nameArray = path.Split(AppConfig.GetSlash());
             string slashlessName = nameArray.Last();
 
-            //Assuming format: Name of Show.S02E125.ts
-            string seasonEpisode = slashlessName.Split('.')[1];
+            //Assuming format: Name of Show With.Title.With.Annoying.Periods.S02E125.ts
+            string[] slashlessArray = slashlessName.Split('.');
+            string seasonEpisode = slashlessArray[slashlessArray.Length - 2];
             //Split on the E
             string justSeason = seasonEpisode.Split('E')[0];
             //Remove the preceeding S
@@ -413,17 +413,64 @@ namespace dvrchive
         
         private void RemoveTempLocation()
         {
-            Directory.Delete(GetTempLocation(), true);
-
-            if (AppConfig.debug)
+            try
             {
-                Console.WriteLine("dvrchive: Deleting temp location at: {0}", GetTempLocation());
+                Directory.Delete(GetTempLocation(), true);
+
+                if (AppConfig.debug)
+                {
+                    Console.WriteLine("dvrchive: Deleting temp location at: {0}", GetTempLocation());
+                }
             }
+            catch (IOException e)
+            {
+                Console.WriteLine("dvrchive: Unable to remove temp path {0}", GetTempLocation());
+                Console.WriteLine("dvrchive: With exception: {0}", e);
+            }
+            
         }
 
         public string GetTempLocation()
         {
             return AppConfig.tempPath + AppConfig.GetSlash() + guid + AppConfig.GetSlash();
         }   
+
+        public void RemoveEDLFiles()
+        {
+            string episodeName = GetEpisodeNameAndNumber();
+
+            List<string> filesToDelete = new List<string>
+            {
+                episodeName + ".edl",
+                episodeName + ".log",
+                episodeName + ".logo.txt",
+                episodeName + ".txt"
+            };
+            if (AppConfig.debug)
+            {
+                Console.WriteLine("dvrchive: Cleaning up archive files:");
+                foreach (string s in filesToDelete)
+                {
+                    Console.WriteLine("dvrchive: {0}", show.path + AppConfig.GetSlash() + s);
+                }
+            }
+
+            foreach (string s in filesToDelete)
+            {
+                if (File.Exists(show.path + AppConfig.GetSlash() + s))
+                {
+                    try
+                    {
+                        File.Delete(show.path + AppConfig.GetSlash() + s);
+                    }
+                    catch (IOException e)
+                    {
+                        Console.WriteLine("dvrchive: ERROR: Unable to delete {0}", show.path + AppConfig.GetSlash() + s);
+                        Console.WriteLine("dvrchive: ERROR: With exception {0}", e);
+                    }
+                }
+            }
+                        
+        }
     }
 }

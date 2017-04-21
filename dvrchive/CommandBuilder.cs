@@ -22,7 +22,7 @@ namespace dvrchive
 
         public static ProcessStartInfo GenerateEncodingCommand(Show show, Episode episode, Segment segment, int segmentCount)
         {
-            string arguments = "-ss " + segment.start.ToString() + " -i \"" + episode.path + "\" -to " + segment.end.ToString() + " -vcodec libx264 -preset fast -crf 23 -vf " + show.GetDeinterlaceString() + "scale=" + show.width + ":-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero \"" + episode.GetTempLocation() + segmentCount + ".mkv\"";
+            string arguments = "-ss " + segment.start.ToString() + " -i \"" + episode.path + "\" -to " + segment.end.ToString() + " -vcodec libx264 -preset fast -crf 23 -vf " + show.GetDeinterlaceString() + "scale=trunc(oh/a/2)*2:" + show.height + " -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero \"" + episode.GetTempLocation() + segmentCount + ".mkv\"";
 
             //Console.WriteLine(arguments);
 
@@ -51,7 +51,7 @@ namespace dvrchive
 
         private static ProcessStartInfo GenerateLastCommandWindows(Show show, Episode episode, Segment segment, int segmentCount)
         {
-            string arguments = "-ss " + segment.start.ToString() + " -i \"" + episode.path + "\" -vcodec libx264 -preset fast -crf 23 -vf " + show.GetDeinterlaceString() + "scale=" + show.width + ":-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero " + ApplyNonWindowsSpaces(episode.GetTempLocation() + segmentCount + ".mkv");
+            string arguments = "-ss " + segment.start.ToString() + " -i \"" + episode.path + "\" -vcodec libx264 -preset fast -crf 23 -vf " + show.GetDeinterlaceString() + "scale=trunc(oh/a/2)*2:" + show.height + " -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero " + ApplyNonWindowsSpaces(episode.GetTempLocation() + segmentCount + ".mkv");
 
             //Console.WriteLine(arguments);
 
@@ -68,7 +68,7 @@ namespace dvrchive
 
         private static ProcessStartInfo GenerateLastCommandNonWindows(Show show, Episode episode, Segment segment, int segmentCount)
         {
-            string arguments = "-ss " + segment.start.ToString() + " -i " + ApplyNonWindowsSpaces(episode.path) + " -vcodec libx264 -preset fast -crf 23 -vf " + show.GetDeinterlaceString() + "scale=" + show.width + ":-1 -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero \"" + episode.GetTempLocation() + segmentCount + ".mkv\"";
+            string arguments = "-ss " + segment.start.ToString() + " -i " + ApplyNonWindowsSpaces(episode.path) + " -vcodec libx264 -preset fast -crf 23 -vf " + show.GetDeinterlaceString() + "scale=trunc(oh/a/2)*2:" + show.height + " -acodec ac3 -ac 6 -ab 384k -copyts -start_at_zero \"" + episode.GetTempLocation() + segmentCount + ".mkv\"";
 
             //Console.WriteLine(arguments);
 
