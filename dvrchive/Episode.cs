@@ -37,6 +37,7 @@ namespace dvrchive
         public double season = 0;
         public string archivePath = "";
         public Guid guid = Guid.NewGuid();
+        public string seasonString = "";
 
 
         public void ProcessEpisode()
@@ -100,6 +101,21 @@ namespace dvrchive
 
         private void CreateEDL()
         {
+            //Single digit season folders have a preceding 0 ie: Season 05
+            if (season > 9)
+            {
+                seasonString = "Season " + season.ToString();
+            }
+            else
+            {
+                seasonString = "Season 0" + season.ToString();
+            }
+
+            if (AppConfig.debug)
+            {
+                Console.WriteLine("dvrchive: CreateEDL: season directory is: {0}",seasonString);
+            }
+
             if (AppConfig.isWindows)
             {
 
@@ -119,8 +135,9 @@ namespace dvrchive
                 //Remember where this program was run from
                 string startDirectory = Directory.GetCurrentDirectory();
 
-                //Go into the show Directory
-                Directory.SetCurrentDirectory(show.path);
+                //Go into the show Directory                
+
+                Directory.SetCurrentDirectory(show.path + AppConfig.GetSlash() + seasonString);
                 Console.WriteLine("dvrchive: Switced to {0}", Directory.GetCurrentDirectory());
 
                 ProcessStartInfo psi = CommandBuilder.GenerateEDLCommand(show, this);
@@ -361,13 +378,13 @@ namespace dvrchive
 
         private void DeduceSeasonNumber()
         {
+            //Plex DVR format: Name of Show With.Title.With.Annoying.Periods. (2017) - S02E125 - Show Title.ts
             //Remove slashes
             string[] nameArray = path.Split(AppConfig.GetSlash());
             string slashlessName = nameArray.Last();
 
-            //Assuming format: Name of Show With.Title.With.Annoying.Periods.S02E125.ts
-            string[] slashlessArray = slashlessName.Split('.');
-            string seasonEpisode = slashlessArray[slashlessArray.Length - 2];
+            string[] slashlessArray = slashlessName.Split(" - ");
+            string seasonEpisode = slashlessArray[1];
             //Split on the E
             string justSeason = seasonEpisode.Split('E')[0];
             //Remove the preceeding S
@@ -451,21 +468,21 @@ namespace dvrchive
                 Console.WriteLine("dvrchive: Cleaning up archive files:");
                 foreach (string s in filesToDelete)
                 {
-                    Console.WriteLine("dvrchive: {0}", show.path + AppConfig.GetSlash() + s);
+                    Console.WriteLine("dvrchive: {0}", show.path + AppConfig.GetSlash() + seasonString + AppConfig.GetSlash() + s);
                 }
             }
 
             foreach (string s in filesToDelete)
             {
-                if (File.Exists(show.path + AppConfig.GetSlash() + s))
+                if (File.Exists(show.path + AppConfig.GetSlash() + seasonString + AppConfig.GetSlash() + s))
                 {
                     try
                     {
-                        File.Delete(show.path + AppConfig.GetSlash() + s);
+                        File.Delete(show.path + AppConfig.GetSlash() + seasonString + AppConfig.GetSlash() + s);
                     }
                     catch (IOException e)
                     {
-                        Console.WriteLine("dvrchive: ERROR: Unable to delete {0}", show.path + AppConfig.GetSlash() + s);
+                        Console.WriteLine("dvrchive: ERROR: Unable to delete {0}", show.path + AppConfig.GetSlash() + seasonString + AppConfig.GetSlash() + s);
                         Console.WriteLine("dvrchive: ERROR: With exception {0}", e);
                     }
                 }

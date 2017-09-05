@@ -45,11 +45,14 @@ namespace dvrchive
 
                 Console.WriteLine("dvrchive: Checking for episodes in {0}", path);
 
-                foreach (string episodePath in Directory.GetFiles(path, "*." + AppConfig.recordingExtension))
+                foreach (string seasonDirectory in Directory.GetDirectories(path))
                 {
-                    Episode episode = new Episode(this, episodePath);
-                    episode.ProcessEpisode();
-                }
+                    foreach (string episodePath in Directory.GetFiles(seasonDirectory, "*." + AppConfig.recordingExtension))
+                    {
+                        Episode episode = new Episode(this, episodePath);
+                        episode.ProcessEpisode();
+                    }
+                }                
             }            
         }
 
@@ -128,21 +131,26 @@ namespace dvrchive
 
         private void DeduceShowName()
         {
+            //Plex DVR format: Name of Show With.Title.With.Annoying.Periods. (2017) - S02E125 - Show Title.ts
+
             //Remove slashes
             string[] nameArray = path.Split(AppConfig.GetSlash());
             string slashlessName = nameArray.Last();
-            nameArray = slashlessName.Split('.');
+            nameArray = slashlessName.Split(" - ");
+            string nameWithoutYear = nameArray[0].Split(" (")[0];
 
-            int count = 0;
+            //int count = 0;
 
-            //Assuming format: Name of Show With.Title.With.Annoying.Periods..S02E125.ts
-            for (int i = 0; i < nameArray.Length - 1; i++)
-            {
-                showName += nameArray[i] + ".";
-                count++;
-            }
 
-            showName += nameArray[count];
+            //for (int i = 0; i < nameArray.Length - 1; i++)
+            //{
+            //    showName += nameArray[i] + ".";
+            //    count++;
+            //}
+
+            //showName += nameArray[count];
+
+            showName = nameWithoutYear;
 
             if (AppConfig.debug)
             {

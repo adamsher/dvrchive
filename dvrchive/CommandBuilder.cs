@@ -173,7 +173,7 @@ namespace dvrchive
 
         private static ProcessStartInfo GenerateEDLCommandWindows(Show show, Episode episode)
         {
-            string arguments = "\"" + episode.path + "\" --output=\"" + show.path + "\"";            
+            string arguments = "\"" + episode.path + "\" --output=\"" + show.path + AppConfig.GetSlash() + episode.seasonString + "\"";            
 
             ProcessStartInfo psi = new ProcessStartInfo
             {
